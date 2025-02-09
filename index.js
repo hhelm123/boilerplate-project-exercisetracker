@@ -59,11 +59,21 @@ app.post('/api/users', urlencodedParser, async (req, res) =>{
    });
 
 //#2. show all users - PASSED
-app.get('/api/users', (req, res) => {
+app.get('/api/users', async (req, res) => {
+  try { 
+     let data = await Users.find();
+     console.log(data);
+     res.status(200).send(data);
+    
+  } catch (error) {
+    console.log(error);
+  }
+ /*  let data = await Users.find();
+
   Users.find({}, {username:1, _id:1}, (err,data)=> {
     if (err) return console.log(err);
     res.status(200).send(data);
-  });
+  }); */
 })
 
 //#3. add exercises returning user and exercise data - NOT PASSED YET
