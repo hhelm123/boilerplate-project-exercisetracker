@@ -16,7 +16,7 @@
         <input id="uname" type="text" name="username" placeholder="username" />
         <input type="submit" value="Submit" />
       </form>
-      <form action="localhost:3000/api/users/:_id/exercises" id="exercise-form" method="post">
+      <form action="http://localhost:3000/api/users/:_id/exercises" id="exercise-form" method="post">
         <h2>Add exercises</h2>
         <p><code>POST /api/users/:_id/exercises</code></p>
         <input id="uid" type="text" name=":_id" placeholder=":_id" />
@@ -37,7 +37,7 @@
 
       exerciseForm.addEventListener("submit", () => {
         const userId = document.getElementById("uid").value;
-        exerciseForm.action = `localhost:3000/api/users/${userId}/exercises`;
+        exerciseForm.action = `http://localhost:3000/api/users/${userId}/exercises`;
 
         exerciseForm.submit();
       });
