@@ -95,7 +95,7 @@ app.post('/api/users/:_id/exercises', urlencodedParser, async (req, res) => {
     const df = new Date(req.body.date);
     console.log(df.toString())
 
-    let exerciseF=await Exercises.create(
+    let exerciseF = await Exercises.create(
       {
         id: req.params._id,
         description: req.body.description,
@@ -105,7 +105,7 @@ app.post('/api/users/:_id/exercises', urlencodedParser, async (req, res) => {
     objId = new mongoose.Types.ObjectId(req.params._id);
     let user = await Users.findOne({ "_id": objId });
 
-   // let exerciseF= await Exercises.findOne({ "id": req.params._id });
+    // let exerciseF= await Exercises.findOne({ "id": req.params._id });
     console.log(exerciseF.date.toDateString());
 
     res.status(200).json({
@@ -124,11 +124,42 @@ app.post('/api/users/:_id/exercises', urlencodedParser, async (req, res) => {
 });
 
 //#4-6. return exercise log - 4/5/6 PASSED
-app.get('/api/users/:_id/logs?', (req, res) => {
+app.get('/api/users/:_id/logs?', async (req, res) => {
   let objId = "";
   objId = new mongoose.Types.ObjectId(req.params._id);
-  Users.findOne({ "_id": objId }, (err, user) => {
-    if (err) return console.log(err);
+  console.log("in get logs " + objId);
+  /*  Users.findOne({ "_id": objId }, (err, user) => {
+     if (err) return console.log(err);
+ 
+     const queryStr =
+       (!isNaN(new Date(req.query.from)) && !isNaN(new Date(req.query.to))) ?
+ 
+         {
+           "id": req.params._id,
+           "date": {
+             "$gte": new Date(req.query.from),
+             "$lte": new Date(req.query.to)
+           }
+         }
+         :
+         {
+           "id": req.params._id
+         }
+ 
+     Exercises.find(queryStr, (err, data) => {
+       if (err) return console.log(err);
+ 
+       const excCount = data.reduce((acc, curr) => {
+         return acc + 1
+       }, 0)
+ 
+       res.status(200).json({ _id: user._id, username: user.username, count: excCount, log: data });
+     }).limit(parseInt(req.query.limit))
+   }) */
+
+  try {
+    let userEx = await Users.findOne({ "_id": objId });
+    console.log("the user found: " + userEx.username);
 
     const queryStr =
       (!isNaN(new Date(req.query.from)) && !isNaN(new Date(req.query.to))) ?
@@ -145,16 +176,40 @@ app.get('/api/users/:_id/logs?', (req, res) => {
           "id": req.params._id
         }
 
-    Exercises.find(queryStr, (err, data) => {
-      if (err) return console.log(err);
+    let data = await Exercises.find(queryStr).limit(parseInt(req.query.limit))
 
-      const excCount = data.reduce((acc, curr) => {
-        return acc + 1
-      }, 0)
+    console.log(typeof data);
+    console.log(data.length);
 
-      res.status(200).json({ _id: user._id, username: user.username, count: excCount, log: data });
-    }).limit(parseInt(req.query.limit))
-  })
+    const updateData0 = { date: (data[0].date).toDateString() };
+    console.log("before updating");
+    console.log(updateData0);
+
+    let dataDateString = data.map(ele => {
+      return {
+        id: ele.id,
+        description: ele.description,
+        duration: ele.duration,
+        date: (ele.date).toDateString()
+      };
+    })
+    console.log("beforeData String");
+    console.log(dataDateString);
+
+
+
+    const excCount = data.reduce((acc, curr) => {
+      return acc + 1
+    }, 0)
+
+
+    res.status(200).json({ _id: userEx._id, username: userEx.username, count: excCount, log: dataDateString });
+
+
+  } catch (error) {
+    console.log(error);
+
+  }
 })
 
 
