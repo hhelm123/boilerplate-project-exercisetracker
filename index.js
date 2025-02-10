@@ -42,9 +42,8 @@ app.post('/api/users', urlencodedParser, async (req, res) => {
      res.status(200).json({username: userName.username, _id: userName._id});
    }); */
   try {
-
-    await Users.create({ username: req.body.username });
-    let user01 = await Users.findOne({ username: req.body.username })
+    let user01 = await Users.create({ username: req.body.username });
+    //let user01 = await Users.findOne({ username: req.body.username })
     console.log("the userID is: " + user01._id);
     res.status(200).json({ username: user01.username, _id: user01._id });
 
@@ -96,7 +95,7 @@ app.post('/api/users/:_id/exercises', urlencodedParser, async (req, res) => {
     const df = new Date(req.body.date);
     console.log(df.toString())
 
-    await Exercises.create(
+    let exerciseF=await Exercises.create(
       {
         id: req.params._id,
         description: req.body.description,
@@ -106,9 +105,9 @@ app.post('/api/users/:_id/exercises', urlencodedParser, async (req, res) => {
     objId = new mongoose.Types.ObjectId(req.params._id);
     let user = await Users.findOne({ "_id": objId });
 
-    let exerciseF = await Exercises.findOne({ "id": req.params._id });
+   // let exerciseF= await Exercises.findOne({ "id": req.params._id });
     console.log(exerciseF.date.toDateString());
-    
+
     res.status(200).json({
       _id: user._id,
       username: user.username,
@@ -126,7 +125,7 @@ app.post('/api/users/:_id/exercises', urlencodedParser, async (req, res) => {
 
 //#4-6. return exercise log - 4/5/6 PASSED
 app.get('/api/users/:_id/logs?', (req, res) => {
- let  objId = "";
+  let objId = "";
   objId = new mongoose.Types.ObjectId(req.params._id);
   Users.findOne({ "_id": objId }, (err, user) => {
     if (err) return console.log(err);
